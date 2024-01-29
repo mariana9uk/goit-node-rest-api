@@ -1,6 +1,6 @@
-import contactsService from "../services/contactsServices.js";
+import contactsService from "../services/contactsServices.js"
 
-export const getAllContacts = (req, res) => {};
+export const getAllContacts = (req, res) => {contactsService.listContacts()};
 
 export const getOneContact = (req, res) => {};
 

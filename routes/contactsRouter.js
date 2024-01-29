@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  getAllContacts,
+ getAllContacts,
   getOneContact,
   deleteContact,
   createContact,

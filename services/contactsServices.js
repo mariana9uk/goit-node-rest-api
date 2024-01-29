@@ -1,10 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import path, { dirname } from 'node:path';
 import crypto from 'node:crypto';
 
-const contactsPath = path.join(__dirname, '..', 'db', 'contacts.json');
-const contactsService = {
-   async listContacts() {
+const contactsPath = path.join('..',"goit-node-rest-api", 'db', 'contacts.json');
+
+ export  async function listContacts() {
   try {
     const data = await readFile(contactsPath, { encoding: 'utf-8' });
     return JSON.parse(data);
@@ -12,23 +12,24 @@ const contactsService = {
     console.error('Error reading contacts file:', error.message);
     throw error;
   }
-},
- async getContactById(contactId) {
+}
+export  async function  getContactById(contactId) {
   const contacts = await listContacts();
+  console.log(contacts)
   const contact = contacts.find((contact) => contact.id === String(contactId));
-
+console.log(contact)
   if (!contact) {
     return null;
   }
 
   return contact;
 }
-,
- writeContacts(contacts) {
+
+ function writeContacts(contacts) {
   return writeFile(contactsPath, JSON.stringify(contacts, undefined, 2));
 }
-,
- async removeContact(contactId) {
+
+export  async function  removeContact(contactId) {
   const contacts = await listContacts();
 
   if (!contacts) {
@@ -50,9 +51,7 @@ const contactsService = {
   await writeContacts(newContactsList);
   return contactToDelete;
 }
-,
-
- async addContact(name, email, phone) {
+export  async function  addContact(name, email, phone) {
   const newContact = { name, email, phone, id: crypto.randomUUID() };
   const contacts = await listContacts();
 
@@ -61,8 +60,8 @@ const contactsService = {
 
   return newContact;
 }
-}
-export default contactsService ;
+
+
 // export {
 //   listContacts,
 //   getContactById,

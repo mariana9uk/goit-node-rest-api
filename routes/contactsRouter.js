@@ -6,7 +6,7 @@ import {
   createContact,
   updateContact,
 } from "../controllers/contactsControllers.js";
-
+// const jsonParser = express.json
 const contactsRouter = express.Router();
 
 contactsRouter.get("/", getAllContacts);

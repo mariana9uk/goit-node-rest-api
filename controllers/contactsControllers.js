@@ -52,19 +52,27 @@ export const deleteContact = async (req, res) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const body = req.body;
-  const check = createContactSchema.validate(body, { abortEarly: false });
+
+  const check = createContactSchema.validate(req.body, { abortEarly: false });
   const { error } = check;
-  console.log(check);
-  console.log(res.error.details);
+console.log(req.body)
+console.log(check)
   if (error) {
-    res
-      .status(400)
-      .send({ message: `${error.details.map((el) => el.message).join(", ")}` });
-    console.log(error);
+    const missingFields = error.details
+    .filter((detail) => detail.type === 'any.required')
+    .map((detail) => detail.context.key);
+
+  if (missingFields.length > 0) {
+    res.status(400).json({ message: `Missing required fields: ${missingFields.join(', ')}` });
   } else {
+
+    res.status(400).json({ message: error.message });
+  }
+  }
+ 
+  else {
     try {
-      const contact = await addContact(body);
+      const contact = await addContact(req.body);
       res.status(201).json(contact);
     } catch (error) {
       next(error);

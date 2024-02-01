@@ -1,6 +1,3 @@
-// import contactsService from "../services/contactsServices.js"
-// import express from "express";
-import HttpError from "../helpers/HttpError.js";
 import {
   createContactSchema,
   updateContactSchema,
@@ -52,25 +49,25 @@ export const deleteContact = async (req, res) => {
 };
 
 export const createContact = async (req, res, next) => {
-
   const check = createContactSchema.validate(req.body, { abortEarly: false });
   const { error } = check;
-console.log(req.body)
-console.log(check)
+  console.log(req.body);
+  console.log(check);
   if (error) {
     const missingFields = error.details
-    .filter((detail) => detail.type === 'any.required')
-    .map((detail) => detail.context.key);
+      .filter((detail) => detail.type === "any.required")
+      .map((detail) => detail.context.key);
 
-  if (missingFields.length > 0) {
-    res.status(400).json({ message: `Missing required fields: ${missingFields.join(', ')}` });
+    if (missingFields.length > 0) {
+      res
+        .status(400)
+        .json({
+          message: `Missing required fields: ${missingFields.join(", ")}`,
+        });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   } else {
-
-    res.status(400).json({ message: error.message });
-  }
-  }
- 
-  else {
     try {
       const contact = await addContact(req.body);
       res.status(201).json(contact);

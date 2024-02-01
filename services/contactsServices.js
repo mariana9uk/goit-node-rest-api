@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import path, { dirname } from "node:path";
+import path from "node:path";
 import crypto from "node:crypto";
 
 const contactsPath = path.join(
@@ -60,30 +60,24 @@ export async function addContact(newContactData) {
 }
 export async function ChangeContact(contactId, newData) {
   const contacts = await listContacts();
-  console.log(contactId)
-  console.log(newData)
+  console.log(contactId);
+  console.log(newData);
   if (!contacts) {
     return;
   }
   const contactToUpdate = contacts.find(
     (contact) => contact.id === String(contactId)
   );
-console.log(contactToUpdate)
+  console.log(contactToUpdate);
   if (contactToUpdate === undefined) {
     return null;
   }
-  const{ email, phone, name } =newData;
-  contactToUpdate.name=name??contactToUpdate.name
-  contactToUpdate.email=email??contactToUpdate.email ;
-  contactToUpdate.phone=phone??contactToUpdate.phone ;
- 
+  const { email, phone, name } = newData;
+  contactToUpdate.name = name ?? contactToUpdate.name;
+  contactToUpdate.email = email ?? contactToUpdate.email;
+  contactToUpdate.phone = phone ?? contactToUpdate.phone;
+
   await writeContacts(contacts);
-  return contactToUpdate
+  return contactToUpdate;
 }
 
-// export {
-//   listContacts,
-//   getContactById,
-//   removeContact,
-//   addContact,
-// };

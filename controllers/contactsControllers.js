@@ -17,7 +17,10 @@ export const getAllContacts = async (req, res) => {
   try {
     const contacts = await listContacts();
     res.status(200).json(contacts);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
 export const getOneContact = async (req, res) => {
@@ -28,7 +31,10 @@ export const getOneContact = async (req, res) => {
     } else {
       res.status(200).json(contact);
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
 export const deleteContact = async (req, res) => {
@@ -39,29 +45,39 @@ export const deleteContact = async (req, res) => {
     } else {
       res.status(200).json({ message: "Contact deleted!" });
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
-export const createContact = async (req, res) => {
+export const createContact = async (req, res, next) => {
   const body = req.body;
-  const { error } = createContactSchema.validate(body);
-  const check = createContactSchema.validate(body)
-  console.log(check)
+  const check = createContactSchema.validate(body, { abortEarly: false });
+  const { error } = check;
+  console.log(check);
+  console.log(res.error.details);
   if (error) {
-    res.status(400).json({ message: `${error.message}` });
-    console.log(error)
+    res
+      .status(400)
+      .send({ message: `${error.details.map((el) => el.message).join(", ")}` });
+    console.log(error);
   } else {
     try {
       const contact = await addContact(body);
       res.status(201).json(contact);
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   }
 };
 
-export const updateContact = async (req, res) => {
+export const updateContact = async (req, res, next) => {
   const body = req.body;
   console.log(body);
-  const { error } = updateContactSchema.validate(body);
+  const check = updateContactSchema.validate(body, { abortEarly: false });
+  const { error } = check;
+
   if (error) {
     res.status(400).json({ message: `${error.message}` });
   }
@@ -78,6 +94,8 @@ export const updateContact = async (req, res) => {
       } else {
         res.status(200).json(contact);
       }
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   }
 };

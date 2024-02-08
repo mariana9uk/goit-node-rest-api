@@ -1,6 +1,6 @@
 import express from "express";
 import {
- getAllContacts,
+  getAllContacts,
   getOneContact,
   deleteContact,
   createContact,
@@ -20,6 +20,6 @@ contactsRouter.post("/", createContact);
 
 contactsRouter.put("/:id", updateContact);
 
-contactsRouter.patch("/:id/favorite", updateStatusContact)
+contactsRouter.patch("/:id/favorite", updateStatusContact);
 
 export default contactsRouter;

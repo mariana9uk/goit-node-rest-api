@@ -3,35 +3,20 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
-dotenv.config()
+dotenv.config();
 
 import contactsRouter from "./routes/contactsRouter.js";
-const uri = process.env.URI
-const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
+const uri = process.env.URI;
+const clientOptions = {
+  serverApi: { version: "1", strict: true, deprecationErrors: true },
+};
 mongoose
-.connect(uri, clientOptions)
-.then(()=>console.info("Database connection successful"))
-.catch((error)=>{console.log("Database connection error:", error)
-process.exit(1)})
-// .finally(mongoose.disconnect())
-// async function run() {
-//   try {
-//     await mongoose.connect(uri, clientOptions);
-//     await mongoose.connection.db.command({ ping: 1 });
-//     console.log("Database connection successful");
-//     // console.log(process.env.URI)
-//   }
-//   catch(error){
-// console.log(error.message);
-//  process.exit(1) } 
-//   finally {
- 
-//     await mongoose.disconnect();
-//   }
-// }
-// run().catch(console.dir);
-
-
+  .connect(uri, clientOptions)
+  .then(() => console.info("Database connection successful"))
+  .catch((error) => {
+    console.log("Database connection error:", error);
+    process.exit(1);
+  });
 
 const app = express();
 app.use(morgan("tiny"));

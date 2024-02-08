@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 
-
+// not used functions
 const contactsPath = path.join(
   "..",
   "goit-node-rest-api",

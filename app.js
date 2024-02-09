@@ -1,11 +1,24 @@
+import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import mongoose from "mongoose";
+dotenv.config();
 
 import contactsRouter from "./routes/contactsRouter.js";
+const uri = process.env.URI;
+const clientOptions = {
+  serverApi: { version: "1", strict: true, deprecationErrors: true },
+};
+mongoose
+  .connect(uri, clientOptions)
+  .then(() => console.info("Database connection successful"))
+  .catch((error) => {
+    console.log("Database connection error:", error);
+    process.exit(1);
+  });
 
 const app = express();
-
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());

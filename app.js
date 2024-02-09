@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 dotenv.config();
 
 import contactsRouter from "./routes/contactsRouter.js";
+import authRouter from "./routes/auth.js";
 const uri = process.env.URI;
 const clientOptions = {
   serverApi: { version: "1", strict: true, deprecationErrors: true },
@@ -24,7 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/contacts", contactsRouter);
-
+app.use("/users/register", authRouter)
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
 });

@@ -101,38 +101,15 @@ export const loginUser = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
      try {
-   
-      const existingUser = await User.findOne({ email });
-      console.log(existingUser);
+   const existingUser = await User.findByIdAndUpdate(req.user.id,{token:null})
+      
       if (existingUser === null) {
-        console.log("Wrong Email");
-        return res
+            return res
           .status(401)
-          .send({ message: "Email Email or password is wrong" });
+          .send({ "message": "Not authorized" });
       }
-      const isMatch = bcrypt.compare(password, existingUser.password);
-      if (isMatch === false) {
-        console.log("Wrong Password");
-        return res
-          .status(401)
-          .send({ message: "Email Email or password is wrong" });
-      }
-      const token = jsonwebtoken.sign(
-        { id: existingUser._id },
-        process.env.JWT_KEY,
-        { expiresIn: 60 * 60 }
-      );
-      res
-        .status(200)
-        .send({
-          token: token,
-          user: {
-            email: existingUser.email,
-            subscription: existingUser.subscription,
-          },
-        });
-      console.log("Sucsess");
-    } catch (error) {
+      res.status(200).send("No Content")
+         } catch (error) {
       next(error);
       console.log(error);
     }

@@ -17,8 +17,9 @@ export const userSchema = new mongoose.Schema(
           default: "starter"
         },
         
-        token: String
-      
+        token: {type:String,
+          required: true
+      }
       },
       { versionKey: false,
        }

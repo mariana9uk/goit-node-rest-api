@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 export const userSchema = new mongoose.Schema(
     {
         password: {
@@ -8,6 +8,7 @@ export const userSchema = new mongoose.Schema(
         email: {
           type: String,
           required: [true, 'Email is required'],
+          index:true,
           unique: true,
         },
         subscription: {
@@ -15,7 +16,11 @@ export const userSchema = new mongoose.Schema(
           enum: ["starter", "pro", "business"],
           default: "starter"
         },
+        
         token: String
-      }
+      
+      },
+      { versionKey: false,
+       }
 )
 export const User = mongoose.model("User", userSchema)

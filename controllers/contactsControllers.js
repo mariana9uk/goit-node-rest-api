@@ -5,6 +5,7 @@ import {
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res, next) => {
+  console.log(req.user)
   try {
     const contacts = await Contact.find();
     res.status(200).send(contacts);

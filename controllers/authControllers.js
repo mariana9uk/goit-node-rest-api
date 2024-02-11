@@ -66,7 +66,8 @@ export const loginUser = async (req, res, next) => {
           .status(401)
           .send({ message: "Email Email or password is wrong" });
       }
-      const isMatch = bcrypt.compare(password, existingUser.password);
+      const isMatch = await bcrypt.compare(password, existingUser.password);
+      
       if (isMatch === false) {
         return res
           .status(401)

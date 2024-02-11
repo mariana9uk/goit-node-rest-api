@@ -1,4 +1,3 @@
-import { token } from "morgan";
 import { User } from "../models/user.js";
 import { registrationSchema } from "../schemas/authSchema.js";
 import bcrypt from "bcrypt";
@@ -12,7 +11,6 @@ export const createUser = async (req, res, next) => {
     const missingFields = error.details
       .filter((detail) => detail.type === "any.required")
       .map((detail) => detail.context.key);
-
     if (missingFields.length > 0) {
       res.status(400).json({
         message: `Missing required fields: ${missingFields.join(", ")}`,
@@ -20,7 +18,8 @@ export const createUser = async (req, res, next) => {
     } else {
       res.status(400).json({ message: error.message });
     }
-  } else {
+  }
+  else {
     try {
       const { email, password } = req.body;
       const passwordHash = await bcrypt.hash(password, 10);
@@ -40,7 +39,6 @@ export const createUser = async (req, res, next) => {
     }
   }
 };
-
 
 export const loginUser = async (req, res, next) => {
   const check = registrationSchema.validate(req.body, { abortEarly: false });
@@ -64,14 +62,12 @@ export const loginUser = async (req, res, next) => {
       const existingUser = await User.findOne({ email });
       console.log(existingUser);
       if (existingUser === null) {
-        console.log("Wrong Email");
-        return res
+           return res
           .status(401)
           .send({ message: "Email Email or password is wrong" });
       }
       const isMatch = bcrypt.compare(password, existingUser.password);
       if (isMatch === false) {
-        console.log("Wrong Password");
         return res
           .status(401)
           .send({ message: "Email Email or password is wrong" });
@@ -81,17 +77,14 @@ export const loginUser = async (req, res, next) => {
         process.env.JWT_KEY,
         { expiresIn: 60 * 60 }
       );
-      await User.findByIdAndUpdate(existingUser._id, {token})
-      res
-        .status(200)
-        .send({
-          token: token,
-          user: {
-            email: existingUser.email,
-            subscription: existingUser.subscription,
-          },
-        });
-      console.log("Sucsess");
+      await User.findByIdAndUpdate(existingUser._id, { token });
+      res.status(200).send({
+        token: token,
+        user: {
+          email: existingUser.email,
+          subscription: existingUser.subscription,
+        },
+      });
     } catch (error) {
       next(error);
       console.log(error);
@@ -100,19 +93,34 @@ export const loginUser = async (req, res, next) => {
 };
 
 export const logoutUser = async (req, res, next) => {
-     try {
-   const existingUser = await User.findByIdAndUpdate(req.user.id,{token:null})
-      
-      if (existingUser === null) {
-            return res
-          .status(401)
-          .send({ "message": "Not authorized" });
-      }
-      res.status(200).send("No Content")
-         } catch (error) {
-      next(error);
-      console.log(error);
+  try {
+    const existingUser = await User.findByIdAndUpdate(req.user.id, {
+      token: null,
+    });
+    if (existingUser === null) {
+      return res.status(401).send({ message: "Not authorized" });
     }
+    res.status(200).send("No Content");
+  } catch (error) {
+    next(error);
+    console.log(error);
   }
+};
 
-
+export const getCurrentUserInfo = async (req, res, next) => {
+  try {
+    const existingUser = await User.findById(req.user.id);
+    if (existingUser === null) {
+      return res.status(401).send({ message: "Not authorized" });
+    }
+    res
+      .status(200)
+      .send({
+        email: existingUser.email,
+        subscription: existingUser.subscription,
+      });
+  } catch (error) {
+    next(error);
+    console.log(error);
+  }
+};

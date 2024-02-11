@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Contact } from "../models/contact.js";
 import {
   createContactSchema,
@@ -5,8 +6,12 @@ import {
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res, next) => {
+  console.log(req.user);
+
   try {
-    const contacts = await Contact.find();
+    const userId = req.user.id;
+    console.log(userId);
+    const contacts = await Contact.find({ owner: userId });
     res.status(200).send(contacts);
   } catch (error) {
     console.log(error);
@@ -14,13 +19,23 @@ export const getAllContacts = async (req, res, next) => {
   }
 };
 
-export const getOneContact = async (req, res) => {
+export const getOneContact = async (req, res, next) => {
+  const isValidObjectId = (id) => {
+    return mongoose.Types.ObjectId.isValid(id)}
   const { id } = req.params;
+
   try {
+if (!isValidObjectId(id)) {
+  return res.status(400).json({ message: "Invalid contact id" })
+}
+    const userId = req.user.id;
     const contact = await Contact.findById(id);
     if (contact === null) {
       res.status(404).json({ message: "Not found" });
     } else {
+      if (userId != String(contact.owner)) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
       res.status(200).json(contact);
     }
   } catch (error) {
@@ -65,6 +80,7 @@ export const createContact = async (req, res, next) => {
         email: req.body.email,
         phone: req.body.phone,
         favorite: req.body.favorite,
+        owner: req.user.id,
       };
       const contact = await Contact.create(newContact);
       res.status(201).json(contact);

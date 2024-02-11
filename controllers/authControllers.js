@@ -100,7 +100,7 @@ export const logoutUser = async (req, res, next) => {
     if (existingUser === null) {
       return res.status(401).send({ message: "Not authorized" });
     }
-    res.status(200).send("No Content");
+    res.status(204).send()
   } catch (error) {
     next(error);
     console.log(error);

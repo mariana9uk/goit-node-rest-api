@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Contact } from "../models/contact.js";
 import {
   createContactSchema,
@@ -18,10 +19,15 @@ export const getAllContacts = async (req, res, next) => {
   }
 };
 
-export const getOneContact = async (req, res) => {
+export const getOneContact = async (req, res, next) => {
+  const isValidObjectId = (id) => {
+    return mongoose.Types.ObjectId.isValid(id)}
   const { id } = req.params;
 
   try {
+if (!isValidObjectId(id)) {
+  return res.status(400).json({ message: "Invalid contact id" })
+}
     const userId = req.user.id;
     const contact = await Contact.findById(id);
     if (contact === null) {

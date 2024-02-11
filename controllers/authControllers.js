@@ -111,6 +111,7 @@ export const logoutUser = async (req, res, next) => {
 export const getCurrentUserInfo = async (req, res, next) => {
   try {
     const existingUser = await User.findById(req.user.id);
+    console.log(req.user.id)
     if (existingUser === null) {
       return res.status(401).send({ message: "Not authorized" });
     }

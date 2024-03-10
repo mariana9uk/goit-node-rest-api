@@ -2,6 +2,8 @@ import { User } from "../models/user.js";
 import { registrationSchema } from "../schemas/authSchema.js";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
+import multer from "multer";
+import path from "node:path"
 
 export const createUser = async (req, res, next) => {
   const check = registrationSchema.validate(req.body, { abortEarly: false });
@@ -126,3 +128,19 @@ export const getCurrentUserInfo = async (req, res, next) => {
     console.log(error);
   }
 };
+
+
+const tempDir=path.join("..", "goit-node-rest-api","temp")
+const multerConfig=multer.diskStorage({
+  destination: tempDir
+})
+const upload = multer({storage:multerConfig})
+
+export const changeAvatar=async(req, res, next)=>{
+try {
+  // const avatar=
+} catch (error) {
+  next(error);
+  console.log(error);
+}
+}

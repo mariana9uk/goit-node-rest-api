@@ -1,8 +1,8 @@
-import Joi, { string } from "joi";
+import Joi from "joi";
 
 export const registrationSchema = Joi.object({
   password: Joi.string().required(),
-  email: Joi.string().email().required(),
- avatarURL: string,
+  email: Joi.string().email().required()
+
 });
 

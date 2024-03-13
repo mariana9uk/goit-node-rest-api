@@ -26,12 +26,16 @@ export const createUser = async (req, res, next) => {
   } else {
     try {
       const { email, password } = req.body;
+      console.log(email)
       const passwordHash = await bcrypt.hash(password, 10);
       const existingUser = await User.findOne({ email });
       if (existingUser != null) {
         return res.status(409).json({ message: "Email in use" });
       }
-      const avatarURL = gravatar.url(email)
+      const address = String( email ).trim().toLowerCase();
+
+      const avatarURL = gravatar.url(address)
+
 //       const avatar = await Jimp.read(avatarURL);
 // await avatar.resize(25, 250).writeAsync(avatarURL)
       const responce = await User.create({ email, password: passwordHash, avatarURL });

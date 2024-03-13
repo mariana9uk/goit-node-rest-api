@@ -6,7 +6,7 @@ import multer from "multer";
 import path from "node:path";
 import gravatar from "gravatar";
 import fs from "node:fs/promises";
-
+import Jimp from "jimp";
 
 export const createUser = async (req, res, next) => {
   const check = registrationSchema.validate(req.body, { abortEarly: false });
@@ -31,7 +31,9 @@ export const createUser = async (req, res, next) => {
       if (existingUser != null) {
         return res.status(409).json({ message: "Email in use" });
       }
-      const avatarURL=gravatar.url(email)
+      const avatarURL = gravatar.url(email)
+//       const avatar = await Jimp.read(avatarURL);
+// await avatar.resize(25, 250).writeAsync(avatarURL)
       const responce = await User.create({ email, password: passwordHash, avatarURL });
 
       res
@@ -131,20 +133,23 @@ export const getCurrentUserInfo = async (req, res, next) => {
 };
 
 const tempDir = path.join("..", "goit-node-rest-api", "temp");
+console.log(tempDir)
 const multerConfig = multer.diskStorage({
   destination: tempDir,
 });
 export const upload = multer({ storage: multerConfig });
 
-const avatarDir = path.join("..", "public", "avatars")
+const avatarDir = path.join("..", "goit-node-rest-api", "public", "avatars")
 export const changeAvatar = async (req, res, next) => {
-  const{_id}=req.user
-  const {path: tempUpload, originalName}=req.file
-  const resultUpload = path.join(avatarDir, originalName)
+
+  const{id}=req.user
+  const filename = `${id}${originalname}`
+  const {path: tempUpload, originalname}=req.file
+  const resultUpload = path.join(avatarDir, filename)
   try {
 await fs.rename(tempUpload, resultUpload)
-const avatarURL= path.join("avatars", originalName)
-await User.findByIdAndUpdate(_id, {avatarURL})
+const avatarURL= path.join("avatars", filename)
+await User.findByIdAndUpdate(id, {avatarURL})
 res.json({avatarURL})
   } catch (error) {
     next(error);

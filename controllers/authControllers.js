@@ -33,11 +33,11 @@ export const createUser = async (req, res, next) => {
         return res.status(409).json({ message: "Email in use" });
       }
       const address = String( email ).trim().toLowerCase();
-
+console.log(address)
       const avatarURL = gravatar.url(address)
+    
+ console.log(avatarURL)
 
-//       const avatar = await Jimp.read(avatarURL);
-// await avatar.resize(25, 250).writeAsync(avatarURL)
       const responce = await User.create({ email, password: passwordHash, avatarURL });
 
       res
@@ -144,16 +144,29 @@ const multerConfig = multer.diskStorage({
 export const upload = multer({ storage: multerConfig });
 
 const avatarDir = path.join("..", "goit-node-rest-api", "public", "avatars")
+
 export const changeAvatar = async (req, res, next) => {
 
   const{id}=req.user
-  const filename = `${id}${originalname}`
   const {path: tempUpload, originalname}=req.file
+  const filename = `${id}${originalname}`
+ 
   const resultUpload = path.join(avatarDir, filename)
   try {
 await fs.rename(tempUpload, resultUpload)
 const avatarURL= path.join("avatars", filename)
+console.log(avatarURL)
+await Jimp.read(resultUpload)
+  .then(image => {
+  image.resize(250, 250)
+  .write(resultUpload)
+  })
+  .catch(err => {
+    console.log(err)
+  });
+
 await User.findByIdAndUpdate(id, {avatarURL})
+
 res.json({avatarURL})
   } catch (error) {
     next(error);

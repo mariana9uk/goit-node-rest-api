@@ -19,6 +19,10 @@ export const userSchema = new mongoose.Schema(
         
         token: {type:String,
             default:null,
+      },
+      avatarURL:{
+        type:String,
+        required:true,
       }
       },
       { versionKey: false,

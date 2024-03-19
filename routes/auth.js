@@ -11,4 +11,5 @@ authRouter.post("/login", loginUser)
 authRouter.post("/logout", checkTokenMiddleware, logoutUser)
 authRouter.get("/current", checkTokenMiddleware, getCurrentUserInfo)
 authRouter.patch("/avatars", checkTokenMiddleware, upload.single("avatar"), changeAvatar)
+authRouter.get("/verify/:verificationToken")
 export default authRouter;

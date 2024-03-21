@@ -5,4 +5,7 @@ export const registrationSchema = Joi.object({
   email: Joi.string().email().required()
 
 });
+export const resendEmailSchema = Joi.object({
+  email:Joi.string().email().required()
+})
 

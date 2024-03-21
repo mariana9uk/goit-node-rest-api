@@ -1,5 +1,5 @@
 import express from "express";
-import { changeAvatar, createUser, getCurrentUserInfo, loginUser, logoutUser, upload } from "../controllers/authControllers.js";
+import { changeAvatar, createUser, getCurrentUserInfo, loginUser, logoutUser, resendVerificationEmail, sendMail, upload, verify } from "../controllers/authControllers.js";
 import { checkTokenMiddleware } from "../helpers/middleware.js";
 
 
@@ -11,5 +11,6 @@ authRouter.post("/login", loginUser)
 authRouter.post("/logout", checkTokenMiddleware, logoutUser)
 authRouter.get("/current", checkTokenMiddleware, getCurrentUserInfo)
 authRouter.patch("/avatars", checkTokenMiddleware, upload.single("avatar"), changeAvatar)
-authRouter.get("/verify/:verificationToken")
+authRouter.get("/verify/:verificationToken", verify)
+authRouter.post("/verify", resendVerificationEmail)
 export default authRouter;

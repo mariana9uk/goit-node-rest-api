@@ -1,5 +1,5 @@
 import express from "express";
-import { changeAvatar, createUser, getCurrentUserInfo, loginUser, logoutUser, resendVerificationEmail, sendMail, upload, verify } from "../controllers/authControllers.js";
+import { changeAvatar, createUser, getCurrentUserInfo, loginUser, logoutUser, resendVerificationEmail, upload, verify } from "../controllers/authControllers.js";
 import { checkTokenMiddleware } from "../helpers/middleware.js";
 
 

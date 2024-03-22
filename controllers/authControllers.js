@@ -1,5 +1,8 @@
 import { User } from "../models/user.js";
-import { registrationSchema, resendEmailSchema } from "../schemas/authSchema.js";
+import {
+  registrationSchema,
+  resendEmailSchema,
+} from "../schemas/authSchema.js";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import multer from "multer";
@@ -7,8 +10,9 @@ import path from "node:path";
 import gravatar from "gravatar";
 import fs from "node:fs/promises";
 import Jimp from "jimp";
-import nanoid from "nanoid";
-import sgMail from "@sendgrid/mail";
+import { nanoid } from "nanoid";
+import pkg from "@sendgrid/mail";
+const { sgMail } = pkg;
 
 export const createUser = async (req, res, next) => {
   const check = registrationSchema.validate(req.body, { abortEarly: false });
@@ -38,19 +42,18 @@ export const createUser = async (req, res, next) => {
       console.log(address);
       const avatarURL = gravatar.url(address);
       const verificationToken = nanoid();
-        const responce = await User.create({
+      const responce = await User.create({
         email,
         password: passwordHash,
         avatarURL,
-        verificationToken,
-      });
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+         });
+      await sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         to: `${email}`,
-        from: "maryanagolyuk@gmail.com", 
+        from: "maryanagolyuk@gmail.com",
         subject: "Verification link",
-        text:`/users/verify/:${verificationToken}`,
-        };
+        text: `/users/verify/:${verificationToken}`,
+      };
       await sgMail
         .send(msg)
         .then(() => {
@@ -62,6 +65,7 @@ export const createUser = async (req, res, next) => {
       res
         .status(201)
         .json({ email: responce.email, subscription: responce.subscription });
+
       console.log("Sucsess");
     } catch (error) {
       next(error);
@@ -69,8 +73,6 @@ export const createUser = async (req, res, next) => {
     }
   }
 };
-
-
 
 export const loginUser = async (req, res, next) => {
   const check = registrationSchema.validate(req.body, { abortEarly: false });
@@ -91,7 +93,7 @@ export const loginUser = async (req, res, next) => {
   } else {
     try {
       const { email, password } = req.body;
-      const{verify}=req.user
+      const { verify } = req.user;
       const existingUser = await User.findOne({ email });
       console.log(existingUser);
       if (existingUser === null) {
@@ -111,8 +113,8 @@ export const loginUser = async (req, res, next) => {
         process.env.JWT_KEY,
         { expiresIn: 60 * 60 }
       );
-      if (verify===false) {
-        return res.status(401).send({ message: "Not verified" }) 
+      if (verify === false) {
+        return res.status(401).send({ message: "Not verified" });
       }
       await User.findByIdAndUpdate(existingUser._id, { token });
       res.status(200).send({
@@ -197,9 +199,8 @@ export const changeAvatar = async (req, res, next) => {
   }
 };
 
-
 export const verify = async (req, res, next) => {
-  const { verificationToken} = req.params;
+  const { verificationToken } = req.params;
   const existingUser = await User.findOneAndUpdate(verificationToken, {
     verify: true,
     verificationToken: null,
@@ -212,23 +213,27 @@ export const verify = async (req, res, next) => {
   res.status(204).send("Verification successful");
 };
 
-
 export const resendVerificationEmail = async (req, res, next) => {
   const check = resendEmailSchema.validate(req.body);
   const { error } = check;
-
+  const { verify } = req.params;
+  const { email } = res.body;
   if (error) {
-    return
+    return res.status(400).send({ message: "missing required field email" });
   }
- const {email} = res.body
+  if (verify === true) {
+    return res
+      .status(400)
+      .send({ message: "Verification has already been passed" });
+  }
 
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  await sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
     to: `${email}`,
-    from: "maryanagolyuk@gmail.com", 
+    from: "maryanagolyuk@gmail.com",
     subject: "Verification link",
-    text:`/users/verify/:${verificationToken}`,
-    };
+    text: `/users/verify/:${verificationToken}`,
+  };
   await sgMail
     .send(msg)
     .then(() => {
@@ -238,7 +243,7 @@ export const resendVerificationEmail = async (req, res, next) => {
       console.error(error);
     });
 
- 
+  res.status(200).send({ message: "Verification email sent" });
 };
 // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // const msg = {

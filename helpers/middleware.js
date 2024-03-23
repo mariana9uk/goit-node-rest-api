@@ -24,6 +24,9 @@ jsonwebtoken.verify(token, process.env.JWT_KEY, async (err, decoded) => {
     if (user.token != token) {
        return res.status(401).json({ message: "Not authorized E" });
     }
+    if (existingUser.verify === false) {
+      return res.status(401).send({ message: "Not verified" });
+    }
     req.user = { id: decoded.id };
     next();
   });

@@ -17,10 +17,10 @@ export const contactSchema = new mongoose.Schema(
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "user",
       // required:true
     },
   },
-  { versionKey: false, timestamps:true }
+  { versionKey: false, timestamps: true }
 );
 export const Contact = mongoose.model("Contact", contactSchema);

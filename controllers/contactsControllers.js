@@ -6,11 +6,8 @@ import {
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res, next) => {
-  console.log(req.user);
-
   try {
     const userId = req.user.id;
-    console.log(userId);
     const contacts = await Contact.find({ owner: userId });
     res.status(200).send(contacts);
   } catch (error) {
@@ -21,13 +18,14 @@ export const getAllContacts = async (req, res, next) => {
 
 export const getOneContact = async (req, res, next) => {
   const isValidObjectId = (id) => {
-    return mongoose.Types.ObjectId.isValid(id)}
+    return mongoose.Types.ObjectId.isValid(id);
+  };
   const { id } = req.params;
 
   try {
-if (!isValidObjectId(id)) {
-  return res.status(400).json({ message: "Invalid contact id" })
-}
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid contact id" });
+    }
     const userId = req.user.id;
     const contact = await Contact.findById(id);
     if (contact === null) {

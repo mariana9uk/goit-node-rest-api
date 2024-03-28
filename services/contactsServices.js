@@ -104,5 +104,3 @@ export async function ChangeStatusContact(contactId, newData) {
   await writeContacts(contacts);
   return contactToUpdate;
 }
-
-
